@@ -1,18 +1,3 @@
-## Скринкасты
-## Видео на RuTube
-- [Rutube плейлист](https://rutube.ru/plst/1579864)
-- [Выполнение лабораторной работы](https://rutube.ru/video/private/55b781d305dfa93e4bac8e110bf0d5ac/?p=6MkE0CXkLZ6WZiPm1feLQw)
-- [Подготовка отчёта и презентации](https://rutube.ru/video/private/222cac53a709138f798349e03bb55ccc/?p=0FhH1Atf26F6fO5TcZjyWQ)
-- [Защита лабораторной работы](https://rutube.ru/video/private/b864b0441f316791636cac8d148a4c10/?p=mOo4pp4wo0Hx9PA7m4_XDw)
-## Видео на VKvideo
-- [VKvideo](https://vkvideo.ru/playlist/-235951974_9/video-235951974_456239070?linked=1)
-- [Выполнение лабораторной работы](https://vkvideo.ru/video-235951974_456239052?list=ln)
-
-## Репозиторий
-##  GitHub
-- [Основной репозиторий](https://github.com/dgavdadaev/2026--1--study--simulation-modeling)
-- [Релиз lab07](https://github.com/dgavdadaev/2026--1--study--simulation-modeling/releases/tag/v1.6.0)
-- [Папка лабораторной работы 7](https://gitverse.ru/dgavdadaev/2026--1--study--simulation-modeling)                                                                                                                                                                          ##  GitVerse
-- [Основной репозиторий](https://gitverse.ru/dgavdadaev/2026--1--study--simulation-modeling/study_admin_local.git)
-- [Релиз lab09](https://gitverse.ru/dgavdadaev/study_admin_local/releases/tag/v1.0.2)
-- [Папка лабораторной работы 9](https://gitverse.ru/dgavdadaev/study_admin_local/content/main/labs/lab10)
+cd /tmp
+wget https://github.com/quarto-dev/quarto-cli/releases/latest/download/quarto-linux-amd64.deb
+sudo apt install ./quarto-linux-amd64.deb -y
