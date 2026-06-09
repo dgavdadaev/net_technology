@@ -1,2 +1,1 @@
-mv ../project/markdown/02_exponential_growth/simulation-modeling-lab01-02_exponential_growth.qmd \
-../project/markdown/02_exponential_growth/02_exponential_growth.qmd
+history > ~/Desktop/history_lab01.txt
