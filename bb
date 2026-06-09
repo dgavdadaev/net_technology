@@ -1,0 +1,294 @@
+RROR: Julia server returned error after receiving "run" command:
+
+Failed to run notebook: /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd
+
+The underlying Julia error was:
+
+EvaluationError: Encountered 18 errors during evaluation
+
+Error 1 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:5
+ArgumentError: Package DifferentialEquations not found in current path.
+- Run `import Pkg; Pkg.add("DifferentialEquations")` to install the DifferentialEquations package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:2405 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:376 [inlined]
+  [3] __require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:2388
+  [4] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:2364
+  [5] eval(m::Module, e::Any)
+    @ Core ./boot.jl:489
+  [6] (::QuartoNotebookWorker.var"#21#22"{Module, Expr})()
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:222
+  [7] (::QuartoNotebookWorker.Packages.IOCapture.var"#12#13"{Type{InterruptException}, QuartoNotebookWorker.var"#21#22"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/vendor/IOCapture/src/IOCapture.jl:170
+  [8] with_logstate(f::QuartoNotebookWorker.Packages.IOCapture.var"#12#13"{Type{InterruptException}, QuartoNotebookWorker.var"#21#22"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}}, logstate::Base.CoreLogging.LogState)
+    @ Base.CoreLogging ./logging/logging.jl:542
+  [9] with_logger(f::Function, logger::Base.CoreLogging.ConsoleLogger)
+    @ Base.CoreLogging ./logging/logging.jl:653
+ [10] capture(f::QuartoNotebookWorker.var"#21#22"{Module, Expr}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Pair{Symbol, Any}})
+    @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/vendor/IOCapture/src/IOCapture.jl:167
+ [11] capture
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:248 [inlined]
+ [12] io_capture(f::Function; cell_options::Dict{String, Any}, kws::@Kwargs{rethrow::DataType, color::Bool, io_context::Vector{Pair{Symbol, Any}}})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:250
+ [13] io_capture
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:246 [inlined]
+ [14] include_str(mod::Module, code::String; file::String, line::Int64, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:201
+ [15] #invokelatest_gr#232
+    @ ./reflection.jl:1297 [inlined]
+ [16] invokelatest_gr
+    @ ./reflection.jl:1289 [inlined]
+ [17] #7
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:18 [inlined]
+ [18] with_inline_display(f::QuartoNotebookWorker.var"#7#8"{String, String, Int64, Dict{String, Any}}, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/InlineDisplay.jl:31
+ [19] _render_thunk(thunk::Function, code::String, cell_options::Dict{String, Any}, is_expansion_ref::Base.RefValue{Bool}; inline::Bool)
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:43
+ [20] _render_thunk
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:35 [inlined]
+ [21] #render#4
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:15 [inlined]
+ [22] render(code::String, file::String, line::Int64, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:1
+ [23] render(::String, ::Vararg{Any}; kwargs::@Kwargs{})
+    @ Main ~/.julia/packages/QuartoNotebookRunner/evCNi/src/startup.jl:145
+ [24] top-level scope
+    @ none:1
+
+Error 2 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:78
+UndefVarError: `ODEProblem` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:79
+
+Error 3 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:92
+UndefVarError: `DataFrame` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:93
+
+Error 4 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:101
+UndefVarError: `df_lv` not defined in `Main.Notebook`
+Suggestion: add an appropriate import or assignment. This global was declared but not assigned.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:102
+
+Error 5 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:135
+LoadError: UndefVarError: `@L_str` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+in expression starting at /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:137
+Stacktrace:
+  [1] eval(m::Module, e::Any)
+    @ Core ./boot.jl:489
+  [2] (::QuartoNotebookWorker.var"#21#22"{Module, Expr})()
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:222
+  [3] (::QuartoNotebookWorker.Packages.IOCapture.var"#12#13"{Type{InterruptException}, QuartoNotebookWorker.var"#21#22"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/vendor/IOCapture/src/IOCapture.jl:170
+  [4] with_logstate(f::QuartoNotebookWorker.Packages.IOCapture.var"#12#13"{Type{InterruptException}, QuartoNotebookWorker.var"#21#22"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}}, logstate::Base.CoreLogging.LogState)
+    @ Base.CoreLogging ./logging/logging.jl:542
+  [5] with_logger(f::Function, logger::Base.CoreLogging.ConsoleLogger)
+    @ Base.CoreLogging ./logging/logging.jl:653
+  [6] capture(f::QuartoNotebookWorker.var"#21#22"{Module, Expr}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Pair{Symbol, Any}})
+    @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/vendor/IOCapture/src/IOCapture.jl:167
+  [7] capture
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:248 [inlined]
+  [8] io_capture(f::Function; cell_options::Dict{String, Any}, kws::@Kwargs{rethrow::DataType, color::Bool, io_context::Vector{Pair{Symbol, Any}}})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:250
+  [9] io_capture
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:246 [inlined]
+ [10] include_str(mod::Module, code::String; file::String, line::Int64, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:201
+ [11] #invokelatest_gr#232
+    @ ./reflection.jl:1297 [inlined]
+ [12] invokelatest_gr
+    @ ./reflection.jl:1289 [inlined]
+ [13] #7
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:18 [inlined]
+ [14] with_inline_display(f::QuartoNotebookWorker.var"#7#8"{String, String, Int64, Dict{String, Any}}, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/InlineDisplay.jl:31
+ [15] _render_thunk(thunk::Function, code::String, cell_options::Dict{String, Any}, is_expansion_ref::Base.RefValue{Bool}; inline::Bool)
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:43
+ [16] _render_thunk
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:35 [inlined]
+ [17] #render#4
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:15 [inlined]
+ [18] render(code::String, file::String, line::Int64, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:1
+ [19] render(::String, ::Vararg{Any}; kwargs::@Kwargs{})
+    @ Main ~/.julia/packages/QuartoNotebookRunner/evCNi/src/startup.jl:145
+ [20] top-level scope
+    @ none:1
+
+Error 6 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:150
+UndefVarError: `hline!` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:151
+
+Error 7 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:157
+UndefVarError: `plot` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:158
+
+Error 8 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:172
+UndefVarError: `df_lv` not defined in `Main.Notebook`
+Suggestion: add an appropriate import or assignment. This global was declared but not assigned.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:174
+
+Error 9 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:183
+UndefVarError: `scatter!` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:184
+
+Error 10 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:190
+UndefVarError: `df_lv` not defined in `Main.Notebook`
+Suggestion: add an appropriate import or assignment. This global was declared but not assigned.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:191
+
+Error 11 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:203
+LoadError: UndefVarError: `@L_str` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+in expression starting at /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:205
+Stacktrace:
+  [1] eval(m::Module, e::Any)
+    @ Core ./boot.jl:489
+  [2] (::QuartoNotebookWorker.var"#21#22"{Module, Expr})()
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:222
+  [3] (::QuartoNotebookWorker.Packages.IOCapture.var"#12#13"{Type{InterruptException}, QuartoNotebookWorker.var"#21#22"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/vendor/IOCapture/src/IOCapture.jl:170
+  [4] with_logstate(f::QuartoNotebookWorker.Packages.IOCapture.var"#12#13"{Type{InterruptException}, QuartoNotebookWorker.var"#21#22"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}}, logstate::Base.CoreLogging.LogState)
+    @ Base.CoreLogging ./logging/logging.jl:542
+  [5] with_logger(f::Function, logger::Base.CoreLogging.ConsoleLogger)
+    @ Base.CoreLogging ./logging/logging.jl:653
+  [6] capture(f::QuartoNotebookWorker.var"#21#22"{Module, Expr}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Pair{Symbol, Any}})
+    @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/vendor/IOCapture/src/IOCapture.jl:167
+  [7] capture
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:248 [inlined]
+  [8] io_capture(f::Function; cell_options::Dict{String, Any}, kws::@Kwargs{rethrow::DataType, color::Bool, io_context::Vector{Pair{Symbol, Any}}})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:250
+  [9] io_capture
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:246 [inlined]
+ [10] include_str(mod::Module, code::String; file::String, line::Int64, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:201
+ [11] #invokelatest_gr#232
+    @ ./reflection.jl:1297 [inlined]
+ [12] invokelatest_gr
+    @ ./reflection.jl:1289 [inlined]
+ [13] #7
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:18 [inlined]
+ [14] with_inline_display(f::QuartoNotebookWorker.var"#7#8"{String, String, Int64, Dict{String, Any}}, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/InlineDisplay.jl:31
+ [15] _render_thunk(thunk::Function, code::String, cell_options::Dict{String, Any}, is_expansion_ref::Base.RefValue{Bool}; inline::Bool)
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:43
+ [16] _render_thunk
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:35 [inlined]
+ [17] #render#4
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:15 [inlined]
+ [18] render(code::String, file::String, line::Int64, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:1
+ [19] render(::String, ::Vararg{Any}; kwargs::@Kwargs{})
+    @ Main ~/.julia/packages/QuartoNotebookRunner/evCNi/src/startup.jl:145
+ [20] top-level scope
+    @ none:1
+
+Error 12 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:219
+UndefVarError: `df_lv` not defined in `Main.Notebook`
+Suggestion: add an appropriate import or assignment. This global was declared but not assigned.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:220
+
+Error 13 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:249
+UndefVarError: `df_lv` not defined in `Main.Notebook`
+Suggestion: add an appropriate import or assignment. This global was declared but not assigned.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:250
+
+Error 14 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:268
+UndefVarError: `spectrum_prey` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:269
+
+Error 15 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:280
+UndefVarError: `plot` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:281
+
+Error 16 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:301
+UndefVarError: `df_lv` not defined in `Main.Notebook`
+Suggestion: add an appropriate import or assignment. This global was declared but not assigned.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:306
+
+Error 17 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:318
+UndefVarError: `df_lv` not defined in `Main.Notebook`
+Suggestion: add an appropriate import or assignment. This global was declared but not assigned.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:327
+
+Error 18 of 18
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:342
+UndefVarError: `savefig` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab02/project/markdown/lv_ode/lv_ode.qmd:343
+
+
+Stack trace:
+    at writeJuliaCommand (file:///opt/quarto/share/extension-subtrees/julia-engine/_extensions/julia-engine/julia-engine.js:1215:13)
+    at async executeJulia (file:///opt/quarto/share/extension-subtrees/julia-engine/_extensions/julia-engine/julia-engine.js:1102:20)
+    at async Object.execute (file:///opt/quarto/share/extension-subtrees/julia-engine/_extensions/julia-engine/julia-engine.js:741:20)
+    at async renderExecute (file:///opt/quarto/bin/quarto.js:136636:25)
+    at async renderFileInternal (file:///opt/quarto/bin/quarto.js:136889:35)
+    at async renderFiles (file:///opt/quarto/bin/quarto.js:136685:9)
+    at async render (file:///opt/quarto/bin/quarto.js:142339:19)
+    at async _Command.actionHandler (file:///opt/quarto/bin/quarto.js:142584:24)
+    at async _Command.execute (file:///opt/quarto/bin/quarto.js:102069:7)
+    at async _Command.parseCommand (file:///opt/quarto/bin/quarto.js:101946:14)
+    at async quarto4 (file:///opt/quarto/bin/quarto.js:187954:5)
+    at async file:///opt/quarto/bin/quarto.js:187983:5
+    at async file:///opt/quarto/bin/quarto.js:187837:14
+    at async mainRunner (file:///opt/quarto/bin/quarto.js:187839:5)
+    at async file:///opt/quarto/bin/quarto.js:187976:3
+dgavdadaev@dgavdadaev-simmodeling:~/20
