@@ -1,4 +1,9 @@
-# Динамика модели DaisyWorld 
+# Динамика модели DaisyWorld
+
+# В данной работе исследуется поведение модели DaisyWorld
+# при различных значениях параметров максимального возраста
+# и начальной доли белых ромашек.
+
 using DrWatson
 @quickactivate "project"
 using Agents
@@ -6,10 +11,10 @@ using DataFrames
 using Plots
 using CairoMakie
 
-# ## Использование daisyworld.jl в папке /src
+# Использование модели DaisyWorld из папки src
 include(srcdir("daisyworld.jl"))
 
-## Параметры эксперимента
+# Параметры эксперимента
 param_dict = Dict(
     :griddims => (30, 30),
     :max_age => [25, 40],
@@ -24,9 +29,10 @@ param_dict = Dict(
     :seed => 165,
 )
 
-# ## Создаём список всех комбинаций
+# Формирование списка комбинаций параметров
 params_list = dict_list(param_dict)
 
+# Выполнение серии вычислительных экспериментов
 for params in params_list
 
     model = daisyworld(;params...)
@@ -51,9 +57,9 @@ for params in params_list
     plt1_name = savename("daisyworld",params) * "_step01" * ".png"
     plt2_name = savename("daisyworld",params) * "_step04" * ".png"
     plt3_name = savename("daisyworld",params) * "_step40" * ".png"
-	
-    # ## Сохранение
-    save(plotsdir(plt1_name), plt1) 
+
+    # Сохранение результатов моделирования
+    save(plotsdir(plt1_name), plt1)
     save(plotsdir(plt2_name), plt2)
     save(plotsdir(plt3_name), plt3)
 
