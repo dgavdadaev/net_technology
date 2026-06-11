@@ -12,7 +12,6 @@ black(a) = a.breed == :black
 white(a) = a.breed == :white
 adata = [(black, count), (white, count)]
 
-## Параметры эксперимента
 param_dict = Dict(
     :griddims => (30, 30),
     :max_age => [25, 40],
@@ -23,27 +22,35 @@ param_dict = Dict(
     :surface_albedo => 0.4,
     :solar_change => 0.005,
     :solar_luminosity => 1.0,
-    :scenario => :default,
+    :scenario => :ramp,
     :seed => 165,
 )
 
-## Создаём список всех комбинаций
 params_list = dict_list(param_dict)
 
-## Запуск модели с подбором параметров
 for params in params_list
 
     model = daisyworld(;params...)
 
-    agent_df, model_df = run!(model, 1000; adata)
-    figure = Figure(size = (600, 400)); # Построение графика изменения числа маргариток
-    ax = figure[1, 1] = Axis(figure, xlabel = "tick", ylabel = "daisy count") # Оси 
-    blackl = lines!(ax, agent_df[!, :time], agent_df[!, :count_black], color = :black) # Черные маргаритки
-    whitel = lines!(ax, agent_df[!, :time], agent_df[!, :count_white], color = :orange) # Белые маргаритки
-    Legend(figure[1, 2], [blackl, whitel], ["black", "white"], labelsize = 12) 
+    temperature(model) = StatsBase.mean(model.temperature) # Параметр температуры
+    mdata = [temperature, :solar_luminosity]
 
-    plt_name = savename("daisy-count",params) * ".png"
+    agent_df, model_df = run!(model, 1000; adata = adata, mdata = mdata)
 
+    figure = CairoMakie.Figure(size = (600, 600));
+    ax1 = figure[1, 1] = Axis(figure, ylabel = "daisy count")
+    blackl = lines!(ax1, agent_df[!, :time], agent_df[!, :count_black], color = :red)
+    whitel = lines!(ax1, agent_df[!, :time], agent_df[!, :count_white], color = :blue)
+    figure[1, 2] = Legend(figure, [blackl, whitel], ["black", "white"])
+
+    ax2 = figure[2, 1] = Axis(figure, ylabel = "temperature") # Показатели параметров
+    ax3 = figure[3, 1] = Axis(figure, xlabel = "tick", ylabel = "luminosity")
+    lines!(ax2, model_df[!, :time], model_df[!, :temperature], color = :red)
+    lines!(ax3, model_df[!, :time], model_df[!, :solar_luminosity], color = :red)
+    for ax in (ax1, ax2); ax.xticklabelsvisible = false; end
+
+
+    plt_name = savename("daisy-luminosity",params) * ".png"
     save(plotsdir(plt_name), figure) # Сохранение изображения
 
 end
