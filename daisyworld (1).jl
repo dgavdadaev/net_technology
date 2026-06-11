@@ -1,32 +1,36 @@
 using DrWatson
 @quickactivate "project"
-
 using Agents, DataFrames, Plots, CSV, Random
 
 include(srcdir("sir_model.jl"))
 
-function run_experiment(p)
+function create_migration_matrix(C, intensity)
+    M = ones(C, C) .* intensity ./ (C-1)
+    for i = 1:C
+        M[i, i] = 1 - intensity
+    end
+    return M
+end
 
-    beta = p[:beta]
-    β_und = fill(beta, 3)
-    β_det = fill(beta/10, 3)
+function peak_time(p)
 
+    migration_rates = create_migration_matrix(p[:C], p[:migration_intensity])
     model = initialize_sir(;
         Ns = p[:Ns],
-        β_und = β_und,
-        β_det = β_det,
+        β_und = p[:β_und],
+        β_det = p[:β_det],
         infection_period = p[:infection_period],
         detection_time = p[:detection_time],
         death_rate = p[:death_rate],
         reinfection_probability = p[:reinfection_probability],
         Is = p[:Is],
         seed = p[:seed],
-        n_steps = p[:n_steps],  # этот параметр не используется в initialize_sir, но может быть нужен для цикла
+        migration_rates = migration_rates,
     )
 
-    infected_fraction(model) =
-        count(a.status == :I for a in allagents(model)) / nagents(model)
-    peak_infected = 0.0
+    infected_frac(model) = count(a.status == :I for a in allagents(model)) / nagents(model)
+    peak = 0.0
+    peak_step = 0
 
     for step = 1:p[:n_steps]
 
@@ -42,42 +46,37 @@ function run_experiment(p)
             end
         end
 
-        frac = infected_fraction(model)
-        if frac > peak_infected
-            peak_infected = frac
+        frac = infected_frac(model)
+        if frac > peak
+            peak = frac
+            peak_step = step
         end
     end
 
-    final_infected = infected_fraction(model)
-    final_recovered = count(a.status == :R for a in allagents(model)) / nagents(model)
-    total_deaths = sum(p[:Ns]) - nagents(model)
-
-    return (
-        peak = peak_infected,
-        final_inf = final_infected,
-        final_rec = final_recovered,
-        deaths = total_deaths,
-    )
+    return (peak_time = peak_step, peak_value = peak)
 end
 
-beta_range = 0.1:0.1:1.0
+migration_intensities = 0.0:0.1:0.5
 seeds = [42, 43, 44]
 
 params_list = []
-for b in beta_range
+for mig in migration_intensities
     for s in seeds
         push!(
             params_list,
             Dict(
-                :beta => b,  # скалярное значение
+                :migration_intensity => mig,  # скаляр
+                :C => 3,
                 :Ns => [1000, 1000, 1000],
+                :β_und => [0.5, 0.5, 0.5],
+                :β_det => [0.05, 0.05, 0.05],
                 :infection_period => 14,
                 :detection_time => 7,
                 :death_rate => 0.02,
                 :reinfection_probability => 0.1,
-                :Is => [0, 0, 1],
+                :Is => [1, 0, 0],
                 :seed => s,
-                :n_steps => 100,
+                :n_steps => 150,
             ),
         )
     end
@@ -85,38 +84,39 @@ end
 
 results = []
 for params in params_list
-    data = run_experiment(params)
+    data = peak_time(params)
     push!(results, merge(params, Dict(pairs(data))))
-    println("Завершён эксперимент с beta = $(params[:beta]), seed = $(params[:seed])")
+    println(
+        "Завершён эксперимент с migration_intensity = $(params[:migration_intensity]), seed = $(params[:seed])",
+    )
 end
 
 df = DataFrame(results)
-CSV.write(datadir("beta_scan_all.csv"), df)
+CSV.write(datadir("migration_scan_all.csv"), df)
 
 using Statistics
 grouped = combine(
-    groupby(df, [:beta]),
-    :peak => mean => :mean_peak,
-    :final_inf => mean => :mean_final_inf,
-    :deaths => mean => :mean_deaths,
+    groupby(df, [:migration_intensity]),
+    :peak_time => mean => :mean_peak_time,
+    :peak_value => mean => :mean_peak_value,
 )
 
 plot(
-    grouped.beta,
-    grouped.mean_peak,
-    label = "Пик эпидемии",
-    xlabel = "Коэффициент заразности β",
-    ylabel = "Доля инфицированных",
+    grouped.migration_intensity,
+    grouped.mean_peak_time,
     marker = :circle,
-    linewidth = 2,
+    xlabel = "Интенсивность миграции",
+    ylabel = "Время до пика (дни)",
+    label = "Время пика",
 )
 plot!(
-    grouped.beta,
-    grouped.mean_final_inf,
-    label = "Конечная доля инфицированных",
+    grouped.migration_intensity,
+    grouped.mean_peak_value .* 3000,
     marker = :square,
+    xlabel = "Интенсивность миграции",
+    ylabel = "Численность в пике",
+    label = "Пиковая заболеваемость",
 )
-plot!(grouped.beta, grouped.mean_deaths ./ 3000, label = "Доля умерших", marker = :diamond)
-savefig(plotsdir("beta_scan.png"))
+savefig(plotsdir("migration_effect.png"))
 
-println("Результаты сохранены в data/beta_scan_all.csv и plots/beta_scan.png")
+println("Результаты сохранены в data/migration_scan_all.csv и plots/migration_effect.png")
