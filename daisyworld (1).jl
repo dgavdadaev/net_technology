@@ -1,58 +1,145 @@
-using DrWatson
-@quickactivate "project"
-using Agents
-using DataFrames
-using Plots
-using CairoMakie
+using Agents, Random
+using Agents.Graphs
+using StatsBase: sample, Weights
+using Distributions: Poisson
 
-include(srcdir("daisyworld.jl"))
+using DrWatson: @dict
 
-
-black(a) = a.breed == :black
-white(a) = a.breed == :white
-adata = [(black, count), (white, count)]
-
-## Параметры эксперимента
-param_dict = Dict(
-    :griddims => (30, 30),
-    :max_age => [25, 40], 
-    :init_white => [0.2, 0.8], 
-    :init_black => 0.2,
-    :albedo_white => 0.75,
-    :albedo_black => 0.25,
-    :surface_albedo => 0.4,
-    :solar_change => 0.005,
-    :solar_luminosity => 1.0,
-    :scenario => :ramp,
-    :seed => 165,
-)
-
-## Создаём список всех комбинаций
-params_list = dict_list(param_dict)
-
-for params in params_list
-
-    model = daisyworld(;params...)
-
-    temperature(model) = StatsBase.mean(model.temperature) # Параметр температуры
-    mdata = [temperature, :solar_luminosity]
-
-    agent_df, model_df = run!(model, 1000; adata = adata, mdata = mdata)
-
-    figure = CairoMakie.Figure(size = (600, 600));
-    ax1 = figure[1, 1] = Axis(figure, ylabel = "daisy count")
-    blackl = lines!(ax1, agent_df[!, :time], agent_df[!, :count_black], color = :red)
-    whitel = lines!(ax1, agent_df[!, :time], agent_df[!, :count_white], color = :blue)
-    figure[1, 2] = Legend(figure, [blackl, whitel], ["black", "white"])
-
-    ax2 = figure[2, 1] = Axis(figure, ylabel = "temperature") # Показатели параметров
-    ax3 = figure[3, 1] = Axis(figure, xlabel = "tick", ylabel = "luminosity") 
-    lines!(ax2, model_df[!, :time], model_df[!, :temperature], color = :red)
-    lines!(ax3, model_df[!, :time], model_df[!, :solar_luminosity], color = :red)
-    for ax in (ax1, ax2); ax.xticklabelsvisible = false; end
-
-
-    plt_name = savename("daisy-luminosity",params) * ".png"
-    save(plotsdir(plt_name), figure) # Сохранение изображения
-
+@agent struct Person(GraphAgent)
+    days_infected::Int
+    status::Symbol
 end
+
+function initialize_sir(;
+    Ns = [1000, 1000, 1000],
+    migration_rates = nothing,
+    β_und = [0.5, 0.5, 0.5],
+    β_det = [0.05, 0.05, 0.05],
+    infection_period = 14,
+    detection_time = 7,
+    death_rate = 0.02,
+    reinfection_probability = 0.1,
+    Is = [0, 0, 1],
+    seed = 42,
+    n_steps = 100,
+)
+    rng = Xoshiro(seed)
+    C = length(Ns)
+
+    if migration_rates === nothing
+        migration_rates = zeros(C, C)
+        for i = 1:C
+            for j = 1:C
+                migration_rates[i, j] = (Ns[i] + Ns[j]) / Ns[i]
+            end
+        end
+        # Нормализация
+        for i = 1:C
+            migration_rates[i, :] ./= sum(migration_rates[i, :])
+        end
+    end
+
+    properties = @dict(
+        Ns,
+        β_und,
+        β_det,
+        migration_rates,
+        infection_period,
+        detection_time,
+        death_rate,
+        reinfection_probability,
+        C
+    )
+
+    space = GraphSpace(complete_graph(C))
+    model = StandardABM(Person, space; properties, rng, (agent_step!) = (sir_agent_step!))
+
+    for city = 1:C
+        for _ = 1:Ns[city]
+            add_agent!(city, model, 0, :S)
+        end
+    end
+
+    for city = 1:C
+        if Is[city] > 0
+            city_agents = ids_in_position(city, model)
+            infected_ids = sample(rng, city_agents, Is[city]; replace = false)
+            for id in infected_ids
+                agent = model[id]
+                agent.status = :I
+                agent.days_infected = 1
+            end
+        end
+    end
+
+    return model
+end
+
+function sir_agent_step!(agent, model)
+    migrate!(agent, model)
+
+    if agent.status == :I
+        transmit!(agent, model)
+    end
+
+    if agent.status == :I
+        agent.days_infected += 1
+    end
+
+    recover_or_die!(agent, model)
+end
+
+function migrate!(agent, model)
+    current_city = agent.pos
+    probs = model.migration_rates[current_city, :]
+    target = sample(abmrng(model), 1:model.C, Weights(probs))
+
+    if target ≠ current_city
+        move_agent!(agent, target, model)
+    end
+end
+
+function transmit!(agent, model)
+    rate = if agent.days_infected < model.detection_time
+        model.β_und[agent.pos]
+    else
+        model.β_det[agent.pos]
+    end
+
+    n_infections = rand(abmrng(model), Poisson(rate))
+    n_infections == 0 && return nothing
+
+    neighbors = [a for a in agents_in_position(agent.pos, model) if a.id != agent.id]
+
+    shuffle!(abmrng(model), neighbors)
+
+    for contact in neighbors
+        if contact.status == :S
+            contact.status = :I
+            contact.days_infected = 1
+            n_infections -= 1
+            n_infections == 0 && return nothing
+        elseif contact.status == :R && rand(abmrng(model)) ≤ model.reinfection_probability
+            contact.status = :I
+            contact.days_infected = 1
+            n_infections -= 1
+            n_infections == 0 && return nothing
+        end
+    end
+end
+
+function recover_or_die!(agent, model)
+    if agent.status == :I && agent.days_infected ≥ model.infection_period
+        if rand(abmrng(model)) ≤ model.death_rate
+            remove_agent!(agent, model)
+        else
+            agent.status = :R
+            agent.days_infected = 0
+        end
+    end
+end
+
+infected_count(model) = count(a.status == :I for a in allagents(model))
+recovered_count(model) = count(a.status == :R for a in allagents(model))
+susceptible_count(model) = count(a.status == :S for a in allagents(model))
+total_count(model) = nagents(model)
