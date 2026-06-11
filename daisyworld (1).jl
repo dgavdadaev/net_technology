@@ -1,38 +1,83 @@
+# Динамика численности маргариток в модели DaisyWorld
+
+# В данной работе исследуется изменение численности
+# чёрных и белых маргариток при различных параметрах модели.
+
 using DrWatson
 @quickactivate "project"
 using Agents
 using DataFrames
 using Plots
+using CairoMakie
 
-# ## Использование основного скрипта в папке /src
+# Подключение модели DaisyWorld
 include(srcdir("daisyworld.jl"))
 
-# # Создание модели daisyworld
-using CairoMakie
-model = daisyworld()
+# Определение функций для подсчёта маргариток
+black(a) = a.breed == :black
+white(a) = a.breed == :white
+adata = [(black, count), (white, count)]
 
-daisycolor(a::Daisy) = a.breed
-
-
-# # Построение графиков
-plotkwargs = (
-    agent_color=daisycolor, agent_size = 20, agent_marker = '✿',
-    heatarray = :temperature,
-    heatkwargs = (colorrange = (-20, 60),),
+# Параметры эксперимента
+param_dict = Dict(
+    :griddims => (30, 30),
+    :max_age => [25, 40],
+    :init_white => [0.2, 0.8],
+    :init_black => 0.2,
+    :albedo_white => 0.75,
+    :albedo_black => 0.25,
+    :surface_albedo => 0.4,
+    :solar_change => 0.005,
+    :solar_luminosity => 1.0,
+    :scenario => :default,
+    :seed => 165,
 )
 
-# ## Шаг 1
-plt1, _ = abmplot(model; plotkwargs...)
+# Формирование списка комбинаций параметров
+params_list = dict_list(param_dict)
 
-# ## Шаг 5
-step!(model, 5)
-plt2, _ = abmplot(model; heatarray = model.temperature, plotkwargs...)
+# Выполнение вычислительных экспериментов
+for params in params_list
 
-# ## Шаг 40
-step!(model, 40)
-plt3, _ = abmplot(model; heatarray = model.temperature, plotkwargs...)
+    model = daisyworld(;params...)
 
-# ## Сохранение графиков
-save(plotsdir("daisy_step001.png"), plt1)
-save(plotsdir("daisy_step005.png"), plt2)
-save(plotsdir("daisy_step040.png"), plt3)
+    agent_df, model_df = run!(model, 1000; adata)
+
+    figure = Figure(size = (600, 400))
+
+    # Построение графика изменения численности маргариток
+    ax = figure[1, 1] = Axis(
+        figure,
+        xlabel = "tick",
+        ylabel = "daisy count"
+    )
+
+    # График для чёрных маргариток
+    blackl = lines!(
+        ax,
+        agent_df[!, :time],
+        agent_df[!, :count_black],
+        color = :black
+    )
+
+    # График для белых маргариток
+    whitel = lines!(
+        ax,
+        agent_df[!, :time],
+        agent_df[!, :count_white],
+        color = :orange
+    )
+
+    Legend(
+        figure[1, 2],
+        [blackl, whitel],
+        ["black", "white"],
+        labelsize = 12
+    )
+
+    plt_name = savename("daisy-count", params) * ".png"
+
+    # Сохранение изображения
+    save(plotsdir(plt_name), figure)
+
+end
