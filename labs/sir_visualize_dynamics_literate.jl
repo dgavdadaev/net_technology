@@ -1,68 +1,109 @@
-# # Сводная визуализация результатов
-#
-# Скрипт загружает результаты сканирования коэффициента заразности
-# и строит составной график с основными эпидемиологическими показателями.
-#
-# ## Подготовка окружения
+        Info Packages marked with ⌅ have new versions available but compatibility constraints restrict them from upgrading. To see why use `status --outdated -m`
+Julia server process started.
+Running [1/4] at line 8:  using DrWatson
+Running [2/4] at line 22:  df = CSV.read(
+Running [3/4] at line 31:  p1 = plot(
+Running [4/4] at line 64:  plot(
+ERROR: Julia server returned error after receiving "run" command:
 
-using DrWatson
-@quickactivate "project"
+Failed to run notebook: /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab04/project/markdown/sir_visualize_dynamics_literate.qmd
 
-using Agents
-using DataFrames
-using Plots
-using CSV
+The underlying Julia error was:
 
-include(srcdir("sir_model.jl"))
+EvaluationError: Encountered 4 errors during evaluation
 
-# ## Загрузка результатов
+Error 1 of 4
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab04/project/markdown/sir_visualize_dynamics_literate.qmd:8
+ArgumentError: Package Agents not found in current path.
+- Run `import Pkg; Pkg.add("Agents")` to install the Agents package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:2405 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:376 [inlined]
+  [3] __require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:2388
+  [4] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:2364
+  [5] eval(m::Module, e::Any)
+    @ Core ./boot.jl:489
+  [6] (::QuartoNotebookWorker.var"#21#22"{Module, Expr})()
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:222
+  [7] (::QuartoNotebookWorker.Packages.IOCapture.var"#12#13"{Type{InterruptException}, QuartoNotebookWorker.var"#21#22"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/vendor/IOCapture/src/IOCapture.jl:170
+  [8] with_logstate(f::QuartoNotebookWorker.Packages.IOCapture.var"#12#13"{Type{InterruptException}, QuartoNotebookWorker.var"#21#22"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}}, logstate::Base.CoreLogging.LogState)
+    @ Base.CoreLogging ./logging/logging.jl:542
+  [9] with_logger(f::Function, logger::Base.CoreLogging.ConsoleLogger)
+    @ Base.CoreLogging ./logging/logging.jl:653
+ [10] capture(f::QuartoNotebookWorker.var"#21#22"{Module, Expr}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Pair{Symbol, Any}})
+    @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/vendor/IOCapture/src/IOCapture.jl:167
+ [11] capture
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:248 [inlined]
+ [12] io_capture(f::Function; cell_options::Dict{String, Any}, kws::@Kwargs{rethrow::DataType, color::Bool, io_context::Vector{Pair{Symbol, Any}}})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:250
+ [13] io_capture
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:246 [inlined]
+ [14] include_str(mod::Module, code::String; file::String, line::Int64, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:201
+ [15] #invokelatest_gr#232
+    @ ./reflection.jl:1297 [inlined]
+ [16] invokelatest_gr
+    @ ./reflection.jl:1289 [inlined]
+ [17] #7
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:18 [inlined]
+ [18] with_inline_display(f::QuartoNotebookWorker.var"#7#8"{String, String, Int64, Dict{String, Any}}, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/InlineDisplay.jl:31
+ [19] _render_thunk(thunk::Function, code::String, cell_options::Dict{String, Any}, is_expansion_ref::Base.RefValue{Bool}; inline::Bool)
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:43
+ [20] _render_thunk
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:35 [inlined]
+ [21] #render#4
+    @ ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:15 [inlined]
+ [22] render(code::String, file::String, line::Int64, cell_options::Dict{String, Any})
+    @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/evCNi/src/QuartoNotebookWorker/src/render.jl:1
+ [23] render(::String, ::Vararg{Any}; kwargs::@Kwargs{})
+    @ Main ~/.julia/packages/QuartoNotebookRunner/evCNi/src/startup.jl:145
+ [24] top-level scope
+    @ none:1
 
-df = CSV.read(
-    datadir("beta_scan_all.csv"),
-    DataFrame,
-)
+Error 2 of 4
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab04/project/markdown/sir_visualize_dynamics_literate.qmd:22
+UndefVarError: `CSV` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab04/project/markdown/sir_visualize_dynamics_literate.qmd:23
 
-# ## Построение графиков
+Error 3 of 4
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab04/project/markdown/sir_visualize_dynamics_literate.qmd:31
+UndefVarError: `plot` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab04/project/markdown/sir_visualize_dynamics_literate.qmd:32
 
-p1 = plot(
-    df.beta,
-    df.peak,
-    label = "Пик",
-    xlabel = "β",
-    ylabel = "Доля инфицированных",
-)
+Error 4 of 4
+@ /home/dgavdadaev/2026-1--study--simulation-modeling/labs/lab04/project/markdown/sir_visualize_dynamics_literate.qmd:64
+UndefVarError: `plot` not defined in `Main.Notebook`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+ [1] top-level scope
+   @ ~/2026-1--study--simulation-modeling/labs/lab04/project/markdown/sir_visualize_dynamics_literate.qmd:65
 
-plot!(
-    p1,
-    df.beta,
-    df.final_inf,
-    label = "Конечная",
-)
 
-p2 = plot(
-    df.beta,
-    df.deaths,
-    xlabel = "β",
-    ylabel = "Число умерших",
-)
-
-p3 = plot(
-    df.beta,
-    df.final_rec,
-    xlabel = "β",
-    ylabel = "Доля выздоровевших",
-)
-
-# ## Формирование итоговой визуализации
-
-plot(
-    p1,
-    p2,
-    p3,
-    layout = (3, 1),
-    size = (800, 900),
-)
-
-savefig(
-    plotsdir("comprehensive_analysis.png"),
-)
+Stack trace:
+    at writeJuliaCommand (file:///opt/quarto/share/extension-subtrees/julia-engine/_extensions/julia-engine/julia-engine.js:1215:13)
+    at async executeJulia (file:///opt/quarto/share/extension-subtrees/julia-engine/_extensions/julia-engine/julia-engine.js:1102:20)
+    at async Object.execute (file:///opt/quarto/share/extension-subtrees/julia-engine/_extensions/julia-engine/julia-engine.js:741:20)
+    at async renderExecute (file:///opt/quarto/bin/quarto.js:136636:25)
+    at async renderFileInternal (file:///opt/quarto/bin/quarto.js:136889:35)
+    at async renderFiles (file:///opt/quarto/bin/quarto.js:136685:9)
+    at async render (file:///opt/quarto/bin/quarto.js:142339:19)
+    at async _Command.actionHandler (file:///opt/quarto/bin/quarto.js:142584:24)
+    at async _Command.execute (file:///opt/quarto/bin/quarto.js:102069:7)
+    at async _Command.parseCommand (file:///opt/quarto/bin/quarto.js:101946:14)
+    at async quarto4 (file:///opt/quarto/bin/quarto.js:187954:5)
+    at async file:///opt/quarto/bin/quarto.js:187983:5
+    at async file:///opt/quarto/bin/quarto.js:187837:14
+    at async mainRunner (file:///opt/quarto/bin/quarto.js:187839:5)
+    at async file:///opt/quarto/bin/quarto.js:187976:3
