@@ -1,0 +1,12 @@
+using Literate
+
+Literate.notebook(
+    "notebooks/ИМЯ_ФАЙЛА.jl",
+    "notebooks"
+)
+
+Literate.markdown(
+    "notebooks/ИМЯ_ФАЙЛА.jl",
+    "notebooks";
+    flavor = Literate.QuartoFlavor()
+)
