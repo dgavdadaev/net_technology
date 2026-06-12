@@ -10,7 +10,6 @@ export simulate_ode, simulate_stochastic
 export detect_deadlock, plot_marking_evolution
 
 # Определение простой структуры PetriNet
-
 struct PetriNet
     n_places::Int
     n_transitions::Int
@@ -40,7 +39,6 @@ function add_arc!(net::PetriNet, place::Int, transition::Int, sign::Int)
 end
 
 # Построение сетей Петри
-
 function build_classical_network(N::Int)
     n_places = 4N
     n_transitions = 3N
@@ -52,6 +50,7 @@ function build_classical_network(N::Int)
         net.place_names[2N+i] = Symbol("Eat_$i")
         net.place_names[3N+i] = Symbol("Fork_$i")
     end
+
     for i = 1:N
         net.transition_names[i] = Symbol("GetLeft_$i")
         net.transition_names[N+i] = Symbol("GetRight_$i")
@@ -85,9 +84,10 @@ function build_classical_network(N::Int)
 
     u0 = zeros(Float64, n_places)
     for i = 1:N
-        u0[i] = 1.0                       # Think_i
-        u0[3N+i] = 1.0                  # Fork_i
+        u0[i] = 1.0          # Think_i
+        u0[3N+i] = 1.0       # Fork_i
     end
+
     return net, u0, net.place_names
 end
 
@@ -111,7 +111,6 @@ function build_arbiter_network(N::Int)
     end
 
     arbiter_idx = 4N + 1
-
     for i = 1:N
         think = i
         hungry = N + i
@@ -145,11 +144,11 @@ function build_arbiter_network(N::Int)
         u0[3N+i] = 1.0
     end
     u0[arbiter_idx] = N - 1
+
     return net, u0, net.place_names
 end
 
 # Детерминированное моделирование (ODE)
-
 function vectorfield(net::PetriNet, rates = ones(net.n_transitions))
     function f!(du, u, params, t)
         a = zeros(net.n_transitions)
@@ -158,7 +157,7 @@ function vectorfield(net::PetriNet, rates = ones(net.n_transitions))
             prod = rate
             for i = 1:net.n_places
                 if net.incidence[i, j] < 0
-                    prod *= u[i] ^ (-net.incidence[i, j])
+                    prod *= u[i]^(-net.incidence[i, j])
                 end
             end
             a[j] = prod
@@ -180,7 +179,6 @@ function simulate_ode(net::PetriNet, u0::Vector{Float64}, tmax::Float64; saveat 
 end
 
 # Стохастическое моделирование (алгоритм Гиллеспи)
-
 function simulate_stochastic(
     net::PetriNet,
     u0::Vector{Float64},
@@ -200,15 +198,17 @@ function simulate_stochastic(
             prod = rate
             for i = 1:net.n_places
                 if net.incidence[i, j] < 0
-                    prod *= u[i] ^ (-net.incidence[i, j])
+                    prod *= u[i]^(-net.incidence[i, j])
                 end
             end
             a[j] = prod
         end
+
         a0 = sum(a)
         if a0 == 0
             break
         end
+
         dt = -log(rand(rng)) / a0
         r = rand(rng) * a0
         cumsum = 0.0
@@ -220,15 +220,18 @@ function simulate_stochastic(
                 break
             end
         end
+
         for i = 1:net.n_places
             u[i] += net.incidence[i, chosen]
         end
+
         t += dt
         if t <= tmax
             push!(times, t)
             push!(states, copy(u))
         end
     end
+
     df = DataFrame(time = times)
     for i = 1:net.n_places
         df[!, String(net.place_names[i])] = [s[i] for s in states]
@@ -237,7 +240,6 @@ function simulate_stochastic(
 end
 
 # Обнаружение deadlock
-
 function detect_deadlock(df::DataFrame, net::PetriNet; tol = 1e-6)
     u_last = [df[end, String(net.place_names[i])] for i = 1:net.n_places]
     for j = 1:net.n_transitions
@@ -256,7 +258,6 @@ function detect_deadlock(df::DataFrame, net::PetriNet; tol = 1e-6)
 end
 
 # Визуализация
-
 function plot_marking_evolution(df::DataFrame, N::Int)
     plots = []
     for group in ["Think", "Hungry", "Eat", "Fork"]
