@@ -10,3 +10,7 @@ Literate.markdown(
     "notebooks";
     flavor = Literate.QuartoFlavor()
 )
+
+using Literate
+
+Literate.script("scripts/sirpetri_run_literate.jl","scripts")
