@@ -1,84 +1,128 @@
 using DrWatson
 @quickactivate "project"
-using StableRNGs
-using Distributions
-using ConcurrentSim
 using ResumableFunctions
+using ConcurrentSim
+using Distributions
+using StableRNGs
 using DataFrames
 using Statistics
 using CSV
 using Plots
 
-rng = StableRNG(123)
+RUNS = 10
+machine_counts = [5, 10, 20, 30]
+S = 3
+repairers = 2
+LAMBDA = 100.0
+MU = 1.0
 
-num_customers = 1000
-num_servers = 2
+function analytical_estimate(N, S, λ, μ)
+    λ_total = N / λ
+    reserve_factor = S + 1
+    return reserve_factor / max(λ_total - μ, 1e-6)
+end
 
-mu = 0.5
-lam = 0.9
-
-arrival_dist = Exponential(1 / lam)
-service_dist = Exponential(1 / mu)
-
-log_df = DataFrame(
-    id = Int[],
-    arrival = Float64[],
-    start_service = Float64[],
-    finish = Float64[],
-    waiting = Float64[],
-    service = Float64[],
-)
-
-@resumable function customer(
+@resumable function machine(
     env::Environment,
-    server::Resource,
-    id::Int,
-    t_a::Float64,
+    repair_facility::Resource,
+    spares::Store{Process},
+    repair_queue_log,
+    working_log,
+    rng,
+    F,
+    G,
+    N,
 )
-    @yield timeout(env, t_a)
-    arrival_time = now(env)
-    req = request(server)
-    @yield req
-    service_start = now(env)
-    wait_time = service_start - arrival_time
-    service_time = rand(rng, service_dist)
-    @yield timeout(env, service_time)
-    finish_time = now(env)
-    @yield unlock(server)
-    push!(log_df, (id, arrival_time, service_start, finish_time, wait_time, service_time))
+    while true
+        try
+            @yield timeout(env, Inf)
+        catch
+        end
+        @yield timeout(env, rand(rng, F))
+        current_working = N + length(spares.items) - 1
+        push!(working_log, (now(env), current_working))
+        get_spare = take!(spares)
+        push!(repair_queue_log, (now(env), length(repair_facility.put_queue)))
+        @yield get_spare | timeout(env)
+        if state(get_spare) != ConcurrentSim.idle
+            @yield interrupt(value(get_spare))
+        else
+            throw(StopSimulation("No more spares!"))
+        end
+        req = request(repair_facility)
+        @yield req
+        @yield timeout(env, rand(rng, G))
+        @yield unlock(repair_facility)
+        @yield put!(spares, active_process(env))
+    end
 end
 
-sim = Simulation()
-server = Resource(sim, num_servers)
-
-global arrival_time = 0.0
-
-for i in 1:num_customers
-
-    global arrival_time += rand(rng, arrival_dist)
-
-    @process customer(
-        sim,
-        server,
-        i,
-        arrival_time,
-    )
+@resumable function start_sim(
+    env::Environment,
+    repair_facility::Resource,
+    spares::Store{Process},
+    repair_queue_log,
+    working_log,
+    rng,
+    F,
+    G,
+    N,
+    S,
+)
+    for i in 1:N
+        proc = @process machine(env, repair_facility, spares, repair_queue_log, working_log, rng, F, G, N)
+        @yield interrupt(proc)
+    end
+    for i in 1:S
+        proc = @process machine(env, repair_facility, spares, repair_queue_log, working_log, rng, F, G, N)
+        @yield put!(spares, proc)
+    end
 end
 
-run(sim)
+results = DataFrame(machines = Int[], crash_time = Float64[], analytical = Float64[], avg_queue = Float64[])
+plots_list = []
 
-println("Среднее время ожидания: ", mean(log_df.waiting))
-println("Среднее время обслуживания: ", mean(log_df.service))
+for N in machine_counts
+    crash_times = Float64[]
+    queue_means = Float64[]
+    final_working_log = nothing
 
-CSV.write(datadir("mmc_results.csv"), log_df)
+    for run_id in 1:RUNS
+        rng = StableRNG(run_id)
+        F = Exponential(LAMBDA)
+        G = Exponential(MU)
+        sim = Simulation()
+        repair_facility = Resource(sim, repairers)
+        spares = Store{Process}(sim)
+        repair_queue_log = DataFrame(time = Float64[], queue = Int[])
+        working_log = DataFrame(time = Float64[], working = Int[])
 
-p1 = histogram(log_df.waiting, bins=30, xlabel="Waiting time", ylabel="Count", title="Waiting time distribution", legend=false)
-p2 = histogram(log_df.service, bins=30, xlabel="Service time", ylabel="Count", title="Service time distribution", legend=false)
-p3 = plot(log_df.id, cumsum(log_df.waiting)./(1:nrow(log_df)), xlabel="Customer", ylabel="Average waiting", title="Average waiting dynamics", legend=false)
-p4 = scatter(log_df.arrival, log_df.waiting, xlabel="Arrival time", ylabel="Waiting time", title="Waiting vs arrival", legend=false)
+        @process start_sim(sim, repair_facility, spares, repair_queue_log, working_log, rng, F, G, N, S)
+        run(sim)
+        stop_time = now(sim)
+        push!(crash_times, stop_time)
+        qmean = isempty(repair_queue_log.queue) ? 0.0 : mean(repair_queue_log.queue)
+        push!(queue_means, qmean)
+        final_working_log = working_log
+    end
 
-final_plot = plot(p1, p2, p3, p4, layout=(2,2), size=(1200,800))
+    analytical = analytical_estimate(N, S, LAMBDA, MU)
+    push!(results, (N, mean(crash_times), analytical, mean(queue_means)))
+
+    p = plot(final_working_log.time, final_working_log.working, xlabel="Time", ylabel="Working machines", title="Machines dynamics N=$N", legend=false)
+    push!(plots_list, p)
+end
+
+println(results)
+CSV.write(datadir("ross_model_results.csv"), results)
+
+p1 = bar(results.machines, results.crash_time, xlabel="Machines", ylabel="Crash time", title="Average crash time", label="Simulation")
+plot!(p1, results.machines, results.analytical, lw=3, label="Analytical")
+
+p2 = plot(results.machines, results.avg_queue, marker=:circle, xlabel="Machines", ylabel="Queue", title="Average repair queue", label=false)
+
+final_plot = plot(p1, p2, plots_list..., layout=(2,3), size=(1500,900))
 display(final_plot)
-savefig(plotsdir("mmc_plots.png"))
+savefig(plotsdir("ross_model_plots.png"))
 
 println("Результаты сохранены в data/ и plots/")
