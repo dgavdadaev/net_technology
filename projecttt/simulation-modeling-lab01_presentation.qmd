@@ -1,0 +1,230 @@
+---
+## Author
+author:
+  name: Авдадаев Джамал Геланиевич
+  email: 1032230169@rudn.ru
+  affiliation:
+    - name: Российский университет дружбы народов
+      country: Российская Федерация
+      city: Москва
+      address: ул. Миклухо-Маклая, д. 6
+
+## Title
+title: "Лабораторная работа №1"
+subtitle: "Подготовка стенда"
+license: "CC BY"
+date: today
+date-format: "YYYY-MM-DD"
+
+bibliography: bib/bibliography.bib
+
+## Formatting
+format:
+  beamer:
+    cite-method: biblatex
+---
+
+# Информация
+
+## Докладчик
+
+:::::::::::::: {.columns align=center}
+::: {.column width="70%"}
+
+  * Авдадаев Джамал Геланиевич
+  * Российский университет дружбы народов им. П. Лумумбы
+  * [1032230169@rudn.ru](mailto:1032230169@rudn.ru)
+
+:::
+::: {.column width="30%"}
+
+:::
+::::::::::::::
+
+# Вводная часть
+
+## Цель работы
+
+Подготовить рабочее окружение для выполнения последующих лабораторных работ [@korolkova2025simulation]:
+
+- Настроить систему контроля версий Git
+- Сгенерировать SSH-ключ для удалённых репозиториев
+- Установить язык программирования Julia
+- Создать воспроизводимый проект DrWatson
+- Реализовать модель экспоненциального роста
+
+## Используемые инструменты
+
+Инструменты разработки:
+
+- Ubuntu Linux
+- Git / GitHub
+- Julia 1.12
+- DrWatson
+- DifferentialEquations.jl
+
+# Выполнение работы
+
+## Обновление системы и базовые пакеты
+
+![Обновление системы и установка базовых пакетов](image/2026-06-09--apt-update__git_ubuntu_setup.png){#fig-001 width=85%}
+
+- `sudo apt update && sudo apt upgrade -y`
+- Установлены: git, git-flow, curl, wget, build-essential, vim;
+- обновлены системные пакеты;
+- установлены git и git-flow;
+- подготовлено окружение разработки.
+
+## Настройка Git
+
+![Базовая настройка параметров Git](image/2026-06-09--git-config__git_config.png){#fig-002 width=85%}
+
+- Имя, email, имя ветки по умолчанию: `master`
+- Параметры: `autocrlf = input`, `safecrlf = warn`
+- Отключено экранирование Unicode: `core.quotepath false`
+
+## Генерация SSH-ключа
+
+![Генерация SSH-ключа по алгоритму Ed25519](image/2026-06-09--ssh-keygen__git_ssh_ed25519.png){#fig-003 width=85%}
+
+- Алгоритм: Ed25519
+- Файл ключа уже существовал — подтверждена перезапись
+- Парольная фраза: пустая (для автоматической авторизации)
+
+## Установка Julia
+
+:::::::::::::: {.columns align=center}
+::: {.column width="50%"}
+
+![Установка Julia через Juliaup](image/2026-06-09--juliaup-install__julia_setup.png){#fig-004}
+
+:::
+::: {.column width="50%"}
+
+![Проверка версий Julia и git-flow](image/2026-06-09--julia-version__julia_gitflow_check.png){#fig-005}
+
+:::
+::::::::::::::
+
+- Установка через официальный скрипт Juliaup (см. @fig-004)
+- `julia --version` → **1.12.6** (см. @fig-005)
+- `git flow version` → **1.12.3 (AVH Edition)**
+
+## Создание проекта DrWatson
+
+:::::::::::::: {.columns align=center}
+::: {.column width="50%"}
+
+![Инициализация проекта DrWatson](image/2026-06-09--drwatson-init__julia_drwatson.png){#fig-006}
+
+:::
+::: {.column width="50%"}
+
+![Активация окружения проекта](image/2026-06-09--pkg-activate__julia_pkg.png){#fig-007}
+
+:::
+::::::::::::::
+
+- `initialize_project("project")` в Julia REPL (см. @fig-006)
+- Созданы: `Project.toml`, `Manifest.toml`, `README.md`
+- Окружение активировано: `Pkg.activate(".")` (см. @fig-007)
+
+## Установка пакетов и проверка
+
+![Проверка установки всех пакетов скриптом test_setup.jl](image/2026-06-09--test-setup__julia_packages_check.png){#fig-008 width=85%}
+
+- Установлено 10 пакетов: DrWatson, DifferentialEquations, Plots, DataFrames, CSV, JLD2, Literate, IJulia, BenchmarkTools, Quarto
+- Скрипт `test_setup.jl` подтвердил загрузку всех пакетов (см. @fig-008)
+- Выведена структура проекта с путями к данным и скриптам
+
+## Реализация модели: скрипт
+
+![Скрипт модели экспоненциального роста](image/2026-06-09--script-run__julia_ode_exponential.png){#fig-009 width=85%}
+
+Модель экспоненциального роста [@korolkova2025simulation]:
+$$\frac{du}{dt} = \alpha u,\quad u(0) = u_0$$
+
+- Функция `exponential_growth!`, солвер `Tsit5`
+- Параметры: $u_0 = 1.0$, $\alpha = 0.3$, $t \in [0, 10]$
+
+## Запуск расчётов и результат
+
+![Результаты первого запуска: DataFrame и время удвоения](image/2026-06-09--results-df__julia_dataframe_output.png){#fig-010 width=85%}
+
+- Первые 5 строк DataFrame: колонки `t` и `u` (см. @fig-010)
+- Аналитическое время удвоения: $T_2 = \ln 2\,/\,0.3 \approx \mathbf{2.31}$
+- Численный результат совпал с аналитическим
+
+## Литературное программирование: tangle
+
+:::::::::::::: {.columns align=center}
+::: {.column width="50%"}
+
+![Генерация производных форматов скриптом tangle.jl](image/2026-06-09--tangle-run__julia_literate_tangle.png){#fig-011}
+
+:::
+::: {.column width="50%"}
+
+![Созданные файлы: qmd и ipynb](image/2026-06-09--tangle-output__julia_literate_output.png){#fig-012}
+
+:::
+::::::::::::::
+
+- Скрипт `tangle.jl` генерирует из литературного кода [@knuth1984literate; @schulte2012multilanguage] (см. @fig-011, @fig-012):
+  - чистый Julia-скрипт
+  - документ Quarto (`.qmd`)
+  - Jupyter-ноутбук (`.ipynb`) [@kery2018story]
+
+## Jupyter-ноутбук и интеграция в отчёт
+
+:::::::::::::: {.columns align=center}
+::: {.column width="55%"}
+
+![Выполнение ноутбука в JupyterLab](image/2026-06-09--jupyter-run__jupyter_notebook_exec.png){#fig-013}
+
+:::
+::: {.column width="45%"}
+
+![Интеграция в отчёт через директиву include](image/2026-06-09--quarto-include__quarto_report_include.png){#fig-014}
+
+:::
+::::::::::::::
+
+- Ноутбук выполнен в JupyterLab [@kery2018story] (см. @fig-013)
+- В `report.qmd` добавлена директива `{{< include >}}` (см. @fig-014)
+
+## Параметрическое сканирование
+
+![Запуск параметрического сканирования: скрипт 02](image/2026-06-09--param-scan__julia_parametric_scan.png){#fig-015 width=85%}
+
+Скрипт `02_exponential_growth.jl`: $\alpha \in \{0.1,\, 0.3,\, 0.5,\, 0.8,\, 1.0\}$ (см. @fig-015)
+
+| $\alpha$ | Финальная популяция | Время удвоения |
+|--------:|--------------------:|---------------:|
+|   0.1   |         2.72        |      6.93      |
+|   0.3   |         20.01       |      2.31      |
+|   1.0   |         22021       |      0.69      |
+
+## Сохранение результатов
+
+![Сохранение всех результатов в формат JLD2](image/2026-06-09--save-results__julia_jld2_save.png){#fig-016 width=85%}
+
+- Макрос `@save` сохраняет данные в формат JLD2 (см. @fig-016)
+- Файл `all_results.jld2`: параметры, DataFrame, графики
+- Повторная загрузка: `@load "all_results.jld2"`
+
+# Результаты и выводы
+
+## Итоги работы
+
+- Подготовлена среда для выполнения лабораторных работ [@korolkova2025simulation]
+- Настроены Git и SSH-авторизация
+- Установлена Julia 1.12.6, создан воспроизводимый проект DrWatson
+- Реализована и верифицирована модель экспоненциального роста ($T_2 \approx 2.31$)
+- Освоен цикл литературного программирования [@knuth1984literate]: скрипт → код + ноутбук + документация
+- Выполнено параметрическое сканирование с сохранением результатов
+
+## {.unnumbered}
+
+::: {#refs}
+:::
