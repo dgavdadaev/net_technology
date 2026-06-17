@@ -13,7 +13,7 @@ author:
 title: "Лабораторная работа №8"
 subtitle: "Дискретно-событийное моделирование: агентная модель SIR"
 date: today
-date-format: "YYYY-MM-DD"
+date-format: "2026-06-12"
 ---
 
 # Информация
